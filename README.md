@@ -1,28 +1,28 @@
 # Sunmi Core (expo-sunmi-core)
 
-Eine hochleistungsfähige, moderne React Native / Expo Library zur nativen Ansteuerung von Sunmi POS-Geräten (wie V2, V2s, T2, etc.). 
+A high-performance, modern React Native / Expo library for natively controlling Sunmi POS devices (such as V2, V2s, T2, etc.).
 
-Diese Bibliothek nutzt die offiziellen Sunmi Java SDKs unter der Haube und wurde speziell für moderne Expo Projekte (SDK 50+) und Android 14+ entwickelt. Keine Veralteten Abhängigkeiten (`jcenter()`) mehr!
+This library uses the official Sunmi Java SDKs under the hood and is specifically built for modern Expo projects (SDK 50+) and Android 14+. No more outdated dependencies (`jcenter()`)!
 
-## Funktionen
+## Features
 
-- 🖨️ **Bondrucker:** ESC/POS Text drucken
-- 📱 **QR-Codes:** Nativer Druck von QR-Codes
-- 💵 **Kassenlade:** RJ11 Impuls an die Cash Drawer senden
-- 📊 **Druckerstatus:** Hardware-Sensoren auslesen (Papier leer, Klappe offen, Überhitzt)
-- 📷 **Barcode-Scanner:** Reaktiver BroadcastReceiver für Hardware-Laser-Scans im Hintergrund (ohne Input-Fokus!)
+- 🖨️ **Receipt Printer:** Print ESC/POS text effortlessly.
+- 📱 **QR Codes:** Native printing of QR codes.
+- 💵 **Cash Drawer:** Send RJ11 pulses to open the cash drawer.
+- 📊 **Printer Status:** Read hardware sensors (out of paper, cover open, overheating).
+- 📷 **Barcode Scanner:** Reactive BroadcastReceiver for background hardware laser scans (no input focus required!).
 
 ---
 
 ## Installation
 
-Da diese Bibliothek als Expo Native Module gebaut wurde, kannst du sie direkt in dein Expo Projekt installieren:
+Since this library is built as an Expo Native Module, you can install it directly from GitHub into your Expo project:
 
 ```bash
 npm install github:xheen908/sunme-core
 ```
 
-Danach musst du die native Android-App neu kompilieren:
+Afterwards, rebuild your native Android app:
 
 ```bash
 npx expo prebuild --clean
@@ -31,30 +31,30 @@ npx expo run:android
 
 ---
 
-## Einrichtung des Sunmi Scanners
+## Sunmi Scanner Setup
 
-Damit der Hardware-Scanner (Laser) im Hintergrund scannt, ohne dass du ein verstecktes Textfeld fokussieren musst, musst du das Sunmi-Gerät einmalig konfigurieren:
+To allow the hardware scanner (laser) to scan in the background without needing a hidden text input field, you must configure your Sunmi device once:
 
-1. Öffne die App **"Scanner"** auf dem Sunmi-Gerät.
-2. Gehe in die Einstellungen (Zahnrad).
-3. Setze den Modus auf **"Broadcast Intent"** (oder "Übertragung per Intent").
-4. Stelle sicher, dass die Aktion (Action) auf `com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED` steht (das ist der Sunmi Standard).
-5. Deaktiviere die "Tastatur-Eingabe" (Keyboard Output).
+1. Open the **"Scanner"** app on the Sunmi device.
+2. Go to Settings (gear icon).
+3. Set the mode to **"Broadcast Intent"** (or "Übertragung per Intent" in German).
+4. Ensure the Action is set to `com.sunmi.scanner.ACTION_DATA_CODE_RECEIVED` (this is the Sunmi standard).
+5. Disable "Keyboard Output".
 
 ---
 
-## API & Nutzung
+## API & Usage
 
-Importiere das Modul in deiner React Native App:
+Import the module in your React Native app:
 
 ```tsx
 import SunmiCore from 'sunmi-core';
-// oder: import SunmiCore from './modules/sunmi-core/src/SunmiCoreModule'; (wenn lokal)
+// or: import SunmiCore from './modules/sunmi-core/src/SunmiCoreModule'; (if local)
 ```
 
-### 1. Barcodes scannen (Event Listener)
+### 1. Scan Barcodes (Event Listener)
 
-Der Scanner läuft komplett im Hintergrund. Du kannst einfach an beliebiger Stelle in deiner App (z.B. im Checkout-Screen) auf das Scan-Event lauschen:
+The scanner runs completely in the background. You can listen for the scan event anywhere in your app (e.g., on the Checkout screen):
 
 ```tsx
 import { useEffect, useState } from 'react';
@@ -65,7 +65,7 @@ export default function Checkout() {
 
   useEffect(() => {
     const subscription = SunmiCore.addListener('onBarcodeScanned', (event) => {
-      console.log("Gescannter Barcode:", event.data);
+      console.log("Scanned Barcode:", event.data);
       setBarcode(event.data);
     });
 
@@ -76,56 +76,56 @@ export default function Checkout() {
 }
 ```
 
-### 2. Bondrucker verwenden
+### 2. Use Receipt Printer
 
-Texte und QR-Codes werden nativ und ohne Latenz gedruckt:
+Texts and QR codes are printed natively with zero latency:
 
 ```tsx
-// Einfacher Text (mit Zeilenumbruch \n)
-SunmiCore.printText("Max Mustermann GmbH\n");
-SunmiCore.printText("Rechnung Nr. 12345\n");
+// Simple text (with newline \n)
+SunmiCore.printText("John Doe LLC\n");
+SunmiCore.printText("Invoice No. 12345\n");
 
-// QR-Code drucken (Text/URL, Größe 1-16, Fehlerkorrektur 0-3)
+// Print QR Code (Text/URL, size 1-16, error correction 0-3)
 SunmiCore.printQRCode("https://fiskaly.com/receipt/123", 8, 1);
 
-// Papier vorschieben (leere Zeilen)
+// Feed paper (empty lines)
 SunmiCore.printText("\n\n\n");
 ```
 
-### 3. Kassenlade öffnen (Cash Drawer)
+### 3. Open Cash Drawer
 
-Öffnet die verbundene Kassenschublade über den RJ11 Anschluss.
+Opens the connected cash drawer via the RJ11 port.
 
 ```tsx
 SunmiCore.openCashDrawer();
 ```
 
-### 4. Druckerstatus abfragen
+### 4. Check Printer Status
 
-Vor dem Drucken kannst du prüfen, ob der Drucker bereit ist:
+Before printing, you can check if the printer is ready:
 
 ```tsx
 const status = SunmiCore.getPrinterStatus();
 
 switch(status) {
-  case 1: console.log("Drucker bereit"); break;
-  case 2: console.log("Drucker wird vorbereitet"); break;
-  case 3: console.log("Kommunikationsfehler"); break;
-  case 4: console.log("Papier leer!"); break;
-  case 5: console.log("Drucker überhitzt!"); break;
-  case 6: console.log("Druckerklappe ist offen!"); break;
-  default: console.log("Unbekannter Status");
+  case 1: console.log("Printer is ready"); break;
+  case 2: console.log("Printer is preparing"); break;
+  case 3: console.log("Communication error"); break;
+  case 4: console.log("Out of paper!"); break;
+  case 5: console.log("Printer is overheated!"); break;
+  case 6: console.log("Printer cover is open!"); break;
+  default: console.log("Unknown status");
 }
 ```
 
 ---
 
-## Fehlerbehebung (Troubleshooting)
+## Troubleshooting
 
-- **App stürzt auf neueren Android Geräten ab (Android 14+):**
-  Die Bibliothek setzt das Flag `RECEIVER_EXPORTED` automatisch für Android 14. Auf Samsung oder Pixel-Handys wird das Drucken ignoriert, wenn keine Drucker-Hardware gefunden wird (es stürzt nicht ab).
-- **Scanner reagiert nicht in der App:**
-  Stelle sicher, dass in der Sunmi-eigenen Scanner-App der Modus "Broadcast" und nicht "Keyboard" eingestellt ist.
+- **App crashes on newer Android devices (Android 14+):**
+  The library automatically sets the `RECEIVER_EXPORTED` flag for Android 14. On standard phones (like Samsung or Pixel), the print commands are safely ignored if no printer hardware is found (it will not crash).
+- **Scanner does not react in the app:**
+  Ensure the Sunmi Scanner app is set to "Broadcast" mode, not "Keyboard" mode.
 
 ---
 *Powered by Expo Native Modules & Sunmi Official SDK.*
