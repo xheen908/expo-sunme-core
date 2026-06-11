@@ -19,7 +19,7 @@ This library uses the official Sunmi Java SDKs under the hood and is specificall
 Since this library is built as an Expo Native Module, you can install it directly from GitHub into your Expo project:
 
 ```bash
-npm install github:xheen908/sunme-core
+npm install github:xheen908/expo-sunme-core
 ```
 
 Afterwards, rebuild your native Android app:
