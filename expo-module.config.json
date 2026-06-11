@@ -1,0 +1,9 @@
+{
+  "platforms": ["apple", "android", "web"],
+  "apple": {
+    "modules": ["SunmiCoreModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.sunmicore.SunmiCoreModule"]
+  }
+}
