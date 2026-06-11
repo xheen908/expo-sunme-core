@@ -1,0 +1,23 @@
+# Node
+node_modules/
+
+# Android
+android/build/
+android/.gradle/
+android/.cxx/
+android/app/build/
+*.iml
+.gradle/
+local.properties
+
+# iOS
+ios/build/
+ios/Pods/
+*.xcworkspace
+xcuserdata/
+
+# Expo
+.expo/
+
+# OS
+.DS_Store
